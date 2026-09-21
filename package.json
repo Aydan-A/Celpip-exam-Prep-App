@@ -1,0 +1,23 @@
+{
+  "name": "celpip-prep",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "CELPIP Exam Prep web app — full exam simulation and section-by-section practice with AI-scored writing & speaking feedback.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "node server/index.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.68.0",
+    "express": "^4.21.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.11"
+  }
+}

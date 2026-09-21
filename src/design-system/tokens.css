@@ -1,0 +1,57 @@
+/*
+ * Design tokens — the single source of truth for colour, type, radius and
+ * elevation. Components read these through `tokens.js` (which maps each token
+ * to `var(--…)`), so re-theming the app means editing this file only.
+ */
+:root {
+  /* ---- Surfaces ---- */
+  --color-bg: #F3F5FA;              /* page background */
+  --color-surface: #FFFFFF;         /* cards, inputs, nav */
+  --color-surface-muted: #F3F5FA;   /* chips, segmented-control track */
+  --color-surface-subtle: #FBFBF9;  /* notes, answer-sheet cells */
+  --color-inverse: #12141C;         /* dark panels (CLB scale, score banner) */
+
+  /* ---- Text ---- */
+  --color-text: #12141C;
+  --color-text-body: #20222C;               /* long-form reading text */
+  --color-text-secondary: rgba(17, 20, 28, 0.6);
+  --color-text-muted: rgba(17, 20, 28, 0.45);
+  --color-text-faint: rgba(17, 20, 28, 0.35);
+  --color-text-on-inverse: #FFFFFF;
+  --color-text-on-inverse-muted: rgba(255, 255, 255, 0.6);
+
+  /* ---- Lines ---- */
+  --color-border: rgba(17, 24, 39, 0.09);
+  --color-border-strong: rgba(17, 24, 39, 0.14);
+  --color-divider: rgba(17, 24, 39, 0.06);
+  --color-border-on-inverse: rgba(255, 255, 255, 0.25);
+  --color-surface-on-inverse: rgba(255, 255, 255, 0.08);
+  --color-track: #EEF1F7;           /* progress-bar / toggle track */
+
+  /* ---- Brand & status ---- */
+  --color-primary: #2451E0;
+  --color-primary-soft: #EAF0FE;
+  --color-primary-disabled: rgba(36, 81, 224, 0.4);
+  --color-primary-on-inverse: #8FB4FF;
+
+  --color-success: #0E8F5F;
+  --color-success-soft: #E7F7EF;
+
+  --color-warning: #B7791F;
+  --color-warning-soft: #FDF3E2;
+  --color-warning-text: #8A5A16;    /* warning copy on warning-soft (AA contrast) */
+
+  --color-danger: #C23B3B;
+  --color-danger-soft: #FCEAEA;
+
+  --color-focus: rgba(36, 81, 224, 0.35);
+
+  /* ---- Type ---- */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Roboto Mono', monospace;
+
+  /* ---- Elevation ---- */
+  --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.06);
+  --shadow-md: 0 4px 14px rgba(16, 24, 40, 0.08);
+  --shadow-knob: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
