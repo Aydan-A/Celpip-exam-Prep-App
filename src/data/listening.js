@@ -6,6 +6,8 @@ export const listening = {
   id: 'listening',
   name: 'Listening',
   order: 0,
+  // Official CELPIP-General figures (celpip.ca test format).
+  official: { duration: '47–55 min', parts: 6, questions: 38 },
   criteria: [
     'Accuracy — selecting the option that matches the literal meaning of the audio',
     'Detail comprehension — catching specific facts, numbers, and names under time pressure',

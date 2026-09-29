@@ -6,6 +6,7 @@ export const reading = {
   id: 'reading',
   name: 'Reading',
   order: 1,
+  official: { duration: '55–60 min', parts: 4, questions: 38 },
   criteria: [
     'Comprehension — identifying the main idea and supporting details',
     "Inference — drawing conclusions the passage implies but doesn't state directly",
