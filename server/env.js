@@ -1,6 +1,5 @@
-// Minimal .env loader (no dependency) so ANTHROPIC_API_KEY / CELPIP_MODEL /
-// PORT can be set in a `.env` file at the project root, as .env.example
-// suggests. Real environment variables always win over the file.
+// Minimal .env loader (no dependency) so PORT can be set in a `.env` file at
+// the project root, as .env.example suggests. Real environment variables always win over the file.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

@@ -19,10 +19,6 @@ export function clbFromPercent(pct) {
   return 3;
 }
 
-export function clbFromScore12(avg) {
-  return Math.max(1, Math.min(12, Math.round(avg)));
-}
-
 export function clbBandInfo(clb) {
   if (clb >= 10) return { label: 'Advanced', ...tone.success };
   if (clb >= 8) return { label: 'Fluent', ...tone.primary };

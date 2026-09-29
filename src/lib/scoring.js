@@ -1,8 +1,8 @@
-import { clbFromPercent, clbFromScore12 } from './clb.js';
+import { clbFromPercent } from './clb.js';
 
 // Derive a section-level summary from its per-task results.
-// MCQ sections (Listening/Reading) aggregate correct/total; productive
-// sections (Writing/Speaking) average the AI 1–12 scores.
+// Only Listening/Reading are scored (correct/total); Writing and Speaking
+// are practised without a score.
 export function sectionSummary(sectionScores) {
   const entries = Object.values(sectionScores || {});
   if (!entries.length) return null;
@@ -15,10 +15,5 @@ export function sectionSummary(sectionScores) {
     return { clb: clbFromPercent(pct), detail: `${correct} / ${total} correct · ${mcq.length} task${mcq.length > 1 ? 's' : ''}` };
   }
 
-  const ai = entries.filter((e) => e.type === 'ai');
-  if (ai.length) {
-    const avg = ai.reduce((a, e) => a + e.avg, 0) / ai.length;
-    return { clb: clbFromScore12(avg), detail: `avg ${Math.round(avg * 10) / 10} / 12 · ${ai.length} task${ai.length > 1 ? 's' : ''}` };
-  }
   return null;
 }

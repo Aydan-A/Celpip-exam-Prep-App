@@ -1,15 +1,11 @@
-// Production server: serves the built app from dist/ and the /api/feedback endpoint.
+// Production server: serves the built app from dist/.
 import './env.js';
 import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { feedbackRoute } from './feedback.js';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const app = express();
-
-app.use(express.json({ limit: '256kb' }));
-app.post('/api/feedback', feedbackRoute);
 
 const dist = path.join(root, 'dist');
 app.use(express.static(dist));
