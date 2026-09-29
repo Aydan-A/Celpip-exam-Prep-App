@@ -1,7 +1,11 @@
-import { Badge, Eyebrow, List, ListRow, color, fontSize } from '../../design-system/index.js';
+import { Badge, Button, Eyebrow, List, ListRow, color, fontSize } from '../../design-system/index.js';
 
 // Per-section latest-result list, shown on the dashboard and the profile.
-export default function ScoreTracker({ rows, style }) {
+// With `onReset` (profile only) a scored section's results can be cleared.
+export default function ScoreTracker({ rows, style, onReset }) {
+  function reset(row) {
+    if (window.confirm(`Clear all ${row.name} scores? Your saved answers are not affected.`)) onReset(row.id);
+  }
   return (
     <>
       <Eyebrow style={{ fontSize: 13, letterSpacing: '0.02em', marginBottom: 10 }}>Your score tracker</Eyebrow>
@@ -14,7 +18,9 @@ export default function ScoreTracker({ rows, style }) {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <div style={{ fontSize: fontSize.sm, color: color.textSecondary }}>{row.detail}</div>
+              {row.targetNote && <div style={{ fontSize: fontSize.sm, fontWeight: 600, color: row.targetNote.color }}>{row.targetNote.label}</div>}
               <Badge tone={row.tone} mono size="md">{row.clbLabel}</Badge>
+              {onReset && row.resettable && <Button variant="ghost" size="sm" onClick={() => reset(row)}>Reset</Button>}
             </div>
           </ListRow>
         ))}

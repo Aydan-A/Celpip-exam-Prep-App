@@ -4,7 +4,7 @@ import ScoreTracker from './ScoreTracker.jsx';
 export default function Dashboard({ v }) {
   return (
     <>
-      <PageHeader title={`Welcome back, ${v.userName}`} subtitle="Choose how you'd like to practice today." style={{ marginBottom: 26 }} />
+      <PageHeader title={v.userFirstName ? `Welcome back, ${v.userFirstName}` : 'Welcome back'} subtitle="Choose how you'd like to practice today." style={{ marginBottom: 26 }} />
 
       <Grid min={300} gap={20} style={{ marginBottom: 28 }}>
         <ModeCard
@@ -34,11 +34,11 @@ export default function Dashboard({ v }) {
 
 function ModeCard({ accent, eyebrow, title, body, chips, cta, onClick }) {
   return (
-    <Card accentBar={accent.color} padding="lg" onClick={onClick}>
+    <Card accentBar={accent.color} padding="lg" onClick={onClick} style={{ height: '100%' }}>
       <Eyebrow color={accent.color} style={{ letterSpacing: '0.06em', marginBottom: 10 }}>{eyebrow}</Eyebrow>
       <Heading level="card" style={{ fontSize: fontSize['2xl'], marginBottom: 8 }}>{title}</Heading>
       <Text style={{ lineHeight: 1.55, marginBottom: 18 }}>{body}</Text>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 'auto', marginBottom: 20 }}>
         {chips.map((c) => (
           <Badge
             key={c.key}

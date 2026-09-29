@@ -22,6 +22,9 @@ export default function TopNav({ v }) {
         <Logo nameClassName="ds-hide-sm" />
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <Button variant="secondary" size="sm" onClick={() => v.goAnswers()} style={{ fontWeight: fontWeight.medium }}>
+          My answers
+        </Button>
         <Button variant="secondary" size="sm" onClick={v.toggleCLBPanel} style={{ fontWeight: fontWeight.medium }}>
           CLB Scale
         </Button>
@@ -33,7 +36,7 @@ export default function TopNav({ v }) {
           style={{ display: 'flex', alignItems: 'center', gap: 8, border: 'none', background: 'transparent', cursor: 'pointer', padding: '4px 6px', borderRadius: 8, color: color.text }}
         >
           <Avatar initials={v.userInitials} />
-          <div className="ds-hide-sm" style={{ fontSize: 13, fontWeight: fontWeight.medium }}>{v.userName}</div>
+          <div className="ds-hide-sm" style={{ fontSize: 13, fontWeight: fontWeight.medium }}>{v.userName || 'Profile'}</div>
         </button>
         <Button variant="ghost" onClick={v.signOut} style={{ fontSize: 12.5, fontWeight: fontWeight.medium, padding: '6px 4px' }}>
           Sign out
