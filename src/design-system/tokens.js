@@ -35,6 +35,11 @@ export const color = {
   warningText: 'var(--color-warning-text)',
   danger: 'var(--color-danger)',
   dangerSoft: 'var(--color-danger-soft)',
+
+  sticky: 'var(--color-sticky)',
+  stickyEdge: 'var(--color-sticky-edge)',
+  stickyText: 'var(--color-sticky-text)',
+  media: 'var(--color-media)',
 };
 
 export const font = {

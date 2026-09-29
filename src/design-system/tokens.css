@@ -41,6 +41,13 @@
   --color-warning-soft: #FDF3E2;
   --color-warning-text: #8A5A16;    /* warning copy on warning-soft (AA contrast) */
 
+  /* Yellow sticky note (My notes) */
+  --color-sticky: #FFF3A0;
+  --color-sticky-edge: #F0D95A;
+  --color-sticky-text: #4A3F00;
+
+  --color-media: #000000;           /* letterbox behind embedded videos */
+
   --color-danger: #C23B3B;
   --color-danger-soft: #FCEAEA;
 

@@ -21,6 +21,7 @@ export default function Card({ padding = 'md', interactive = false, accentBar, e
         overflow: accentBar ? 'hidden' : undefined,
         cursor: clickable ? 'pointer' : undefined,
         padding: accentBar ? 0 : PADDING[padding],
+        ...(accentBar ? { display: 'flex', flexDirection: 'column' } : null),
         ...style,
       }}
       {...rest}
@@ -28,7 +29,7 @@ export default function Card({ padding = 'md', interactive = false, accentBar, e
       {accentBar ? (
         <>
           <div style={{ height: 8, background: accentBar }} />
-          <div style={{ padding: PADDING[padding] }}>{children}</div>
+          <div style={{ padding: PADDING[padding], flex: 1, display: 'flex', flexDirection: 'column' }}>{children}</div>
         </>
       ) : (
         children
