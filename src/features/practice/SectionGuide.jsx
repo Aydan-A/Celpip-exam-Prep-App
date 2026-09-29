@@ -21,9 +21,10 @@ export default function SectionGuide({ section }) {
 }
 
 // "Term — explanation" items get the term in bold so each point scans quickly.
-export function GuideList({ items }) {
+export function GuideList({ items, ordered = false }) {
+  const List = ordered ? 'ol' : 'ul';
   return (
-    <ul style={{ margin: 0, paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <List style={{ margin: 0, paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 8 }}>
       {items.map((item, i) => {
         const [term, ...rest] = item.split(' — ');
         return (
@@ -32,6 +33,6 @@ export function GuideList({ items }) {
           </li>
         );
       })}
-    </ul>
+    </List>
   );
 }

@@ -41,12 +41,8 @@ export function buildFullExamSequence(onlySection) {
       seq.push({ section, mockIndex: keyed[Math.floor(Math.random() * keyed.length)] });
       return;
     }
-    const picked = {};
     SECTIONS[section].tasks.forEach((task, taskIndex) => {
-      // A task marked `sameItemAs` reuses that earlier task's item (Speaking
-      // Part 4 predicts from the picture described in Part 3).
-      const itemIndex = task.sameItemAs in picked ? picked[task.sameItemAs] : Math.floor(Math.random() * task.bank.length);
-      picked[task.id] = itemIndex;
+      const itemIndex = Math.floor(Math.random() * task.bank.length);
       seq.push({ section, taskIndex, itemIndex });
     });
   });

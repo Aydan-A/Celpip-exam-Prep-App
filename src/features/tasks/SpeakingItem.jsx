@@ -1,4 +1,5 @@
-import { Alert, Badge, BulletList, Button, Card, CopyButton, Eyebrow, Mono, ProgressBar, TextArea, color, fontSize, radius, tone } from '../../design-system/index.js';
+import { Alert, Badge, Button, Card, CopyButton, Eyebrow, Heading, Mono, ProgressBar, TextArea, color, fontSize, radius, tone } from '../../design-system/index.js';
+import { GuideList } from '../practice/SectionGuide.jsx';
 import { canTranscribe } from '../../lib/recorder.js';
 import VocabSticky from '../vocab/VocabSticky.jsx';
 import ItemFilter from './ItemFilter.jsx';
@@ -32,9 +33,20 @@ export default function SpeakingItem({ v }) {
           </div>
 
           {item.image && (
-            <img src={item.image} alt="Picture to describe" style={{ display: 'block', width: '100%', maxWidth: 640, margin: '0 auto 16px', borderRadius: 10, border: `1px solid ${color.border}` }} />
+            <img src={item.image} alt="Task picture" style={{ display: 'block', width: '100%', maxWidth: 640, margin: '0 auto 16px', borderRadius: 10, border: `1px solid ${color.border}` }} />
           )}
+          {item.title && <Heading level="card" style={{ marginBottom: 8 }}>{item.title}</Heading>}
           {item.prompt && <div style={{ fontSize: 14, lineHeight: 1.7, color: color.textBody, marginBottom: 18 }}>{item.prompt}</div>}
+          {item.options && (
+            <div style={{ margin: '-4px 0 18px', padding: '12px 16px', background: color.primarySoft, borderLeft: `3px solid ${color.primary}`, borderRadius: radius.md }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: color.text, marginBottom: 6 }}>Choose ONE of the following options:</div>
+              {item.options.map((o, i) => (
+                <div key={i} style={{ fontSize: 14, lineHeight: 1.6, color: color.text }}>
+                  <span style={{ fontWeight: 700 }}>Option {'AB'[i]}: </span>{o}
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Prep phase (idle + prep both show the notepad) */}
           {(t.phase === 'idle' || t.phase === 'prep') && (
@@ -101,8 +113,8 @@ export default function SpeakingItem({ v }) {
 
         {task.tips && (
           <Card style={{ padding: '18px 22px', marginBottom: 16 }}>
-            <Eyebrow style={{ marginBottom: 8 }}>Tips for this task</Eyebrow>
-            <BulletList items={task.tips} />
+            <Eyebrow style={{ marginBottom: 8 }}>{task.tipsTitle || 'Tips for this task'}</Eyebrow>
+            <GuideList items={task.tips} ordered={task.tipsOrdered} />
           </Card>
         )}
       </div>
