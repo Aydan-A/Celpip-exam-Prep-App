@@ -17,6 +17,11 @@ export default function AuthScreen({ v }) {
         />
 
         <form onSubmit={(e) => { e.preventDefault(); v.submitAuth(); }} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {v.authMode === 'signup' && (
+            <Field label="Your name">
+              <TextInput type="text" autoComplete="name" placeholder="First and last name" value={v.authName} onChange={v.onAuthNameChange} />
+            </Field>
+          )}
           <Field label="Email">
             <TextInput type="email" placeholder="you@example.com" value={v.authEmail} onChange={v.onAuthEmailChange} />
           </Field>

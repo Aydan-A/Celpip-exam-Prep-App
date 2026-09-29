@@ -1,38 +1,62 @@
-import { LISTENING_MOCK_PARTS, MOCK_OPTION_LETTERS } from '../../data/index.js';
+import { MOCK_OPTION_LETTERS } from '../../data/index.js';
 import { clbBandInfo } from '../../lib/clb.js';
+import ExamBar from '../exam/ExamBar.jsx';
 import { Alert, BackLink, Badge, Button, Card, Eyebrow, Heading, Mono, PageHeader, Select, color, fontSize, radius, tone } from '../../design-system/index.js';
 
-// Full listening mock: the YouTube video plays the whole 6-part test; the
-// candidate marks answers on the sheet below and checks them at the end.
-// Auto-scoring needs the item's answer key (see data/videoMocks.js).
+// Listening / Reading video mock: the YouTube video plays the whole test; the
+// candidate marks answers on the sheet below and checks them at the end. With
+// a part picked, only that part's questions are shown and scored.
+// Auto-scoring needs the item's answer key (data/videoMocks.js,
+// data/readingVideoMocks.js). In full-exam mode the test is fixed (no
+// picker) and Continue unlocks once the answers are checked.
 export default function VideoMockScreen({ v }) {
+  const sec = v.mockSection;
   const item = v.mockItem;
+  const allParts = sec.mockParts;
+  const isReading = sec.id === 'reading';
   const { answers, checked, result } = v.mock;
   const key = v.mockKey;
-  const answered = Object.keys(answers).length;
-  const totalQ = LISTENING_MOCK_PARTS.reduce((a, p) => a + p.count, 0);
+  const part = v.mockPart;
+  const totalQ = v.mockParts.reduce((a, p) => a + p.count, 0);
+  const answered = Object.keys(answers).filter((n) => n >= v.mockFirstQ && n < v.mockFirstQ + totalQ).length;
+  // Unanswered questions count as wrong, so confirm before scoring a partly
+  // filled sheet. An empty sheet can't be checked in practice.
+  function check() {
+    if (answered < totalQ && !window.confirm(`You answered ${answered} of ${totalQ} questions. Unanswered ones count as wrong. Check anyway?`)) return;
+    v.checkVideoMock();
+  }
 
-  let qNum = 0;
+  let qNum = v.mockFirstQ - 1;
   return (
     <>
-      <BackLink onClick={v.goTaskList}>Listening tasks</BackLink>
+      {v.isFull ? <ExamBar v={v} /> : <BackLink onClick={v.goTaskList}>{sec.name}</BackLink>}
       <PageHeader
-        title={`Listening · ${item.label}`}
-        subtitle="Play the video once, top to bottom, like the real exam. Mark your answer for each question below as you go, then check at the end."
+        title={`${sec.name} · ${item.label}${part != null ? ` · Part ${part + 1}` : ''}`}
+        subtitle={
+          part != null
+            ? `Skip the video to Part ${part + 1} (${allParts[part].name.split(' · ')[1]}) and mark your answers below as you ${isReading ? 'read' : 'listen'}.`
+            : isReading
+              ? 'Work through the video part by part, pausing to read each passage. Mark your answer for each question below, then check at the end.'
+              : 'Play the video once, top to bottom, like the real exam. Mark your answer for each question below as you go, then check at the end.'
+        }
         style={{ marginTop: 8, marginBottom: 18 }}
-        actions={
+        actions={!v.isFull && (
           <>
             <Select value={v.mock.index} onChange={(e) => v.selectVideoMock(Number(e.target.value))}>
               {v.videoMocks.map((m, i) => (
                 <option key={m.id} value={i}>{m.label}{m.answers ? '' : ' — no key yet'}</option>
               ))}
             </Select>
-            <Button variant="outline" size="sm" onClick={() => v.startVideoMock()} style={{ padding: '10px 14px' }}>🔀 Random test</Button>
+            <Select value={part == null ? 'all' : part} onChange={(e) => v.selectVideoMock(v.mock.index, e.target.value === 'all' ? null : Number(e.target.value))}>
+              <option value="all">All {allParts.length} parts</option>
+              {allParts.map((p, i) => <option key={p.name} value={i}>{p.name}</option>)}
+            </Select>
+            <Button variant="outline" size="sm" onClick={() => v.startVideoMock(null, v.mockPart)} style={{ padding: '10px 14px' }}>🔀 Random test</Button>
           </>
-        }
+        )}
       />
 
-      <div style={{ background: '#000', borderRadius: radius.lg, overflow: 'hidden', marginBottom: 18 }}>
+      <div style={{ background: color.media, borderRadius: radius.lg, overflow: 'hidden', marginBottom: 18 }}>
         <iframe
           key={item.youtube}
           src={`https://www.youtube.com/embed/${item.youtube}?rel=0`}
@@ -49,11 +73,11 @@ export default function VideoMockScreen({ v }) {
           <Mono size="sm" color={color.textMuted} style={{ fontWeight: 400 }}>{answered} / {totalQ} answered</Mono>
         </div>
 
-        {LISTENING_MOCK_PARTS.map((part) => (
-          <div key={part.name}>
-            <Eyebrow color={color.primary} style={{ margin: '16px 0 8px' }}>{part.name}</Eyebrow>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 8 }}>
-              {Array.from({ length: part.count }, () => ++qNum).map((n) => {
+        {v.mockParts.map((p) => (
+          <div key={p.name}>
+            <Eyebrow color={color.primary} style={{ margin: '16px 0 8px' }}>{p.name}</Eyebrow>
+            <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(${(p.options || MOCK_OPTION_LETTERS).length > 4 ? 212 : 180}px, 1fr))`, gap: 8 }}>
+              {Array.from({ length: p.count }, () => ++qNum).map((n) => {
                 const picked = answers[n];
                 const correctLetter = key ? key[n - 1] : null;
                 const isRight = checked && picked === correctLetter;
@@ -61,7 +85,7 @@ export default function VideoMockScreen({ v }) {
                 return (
                   <div key={n} style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid ' + (isRight ? color.success : isWrong ? color.danger : color.border), borderRadius: radius.md, padding: '7px 9px', background: isRight ? tone.success.bg : isWrong ? tone.danger.bg : color.surfaceSubtle }}>
                     <Mono size={12} color={color.textSecondary} style={{ width: 20 }}>{n}.</Mono>
-                    {MOCK_OPTION_LETTERS.map((L) => (
+                    {(p.options || MOCK_OPTION_LETTERS).map((L) => (
                       <button
                         key={L}
                         type="button"
@@ -93,15 +117,18 @@ export default function VideoMockScreen({ v }) {
             checked ? (
               <ScoreBadge result={result} />
             ) : (
-              <div style={{ fontSize: fontSize.sm, color: color.textMuted }}>Finish the video, then check your answers.</div>
+              <div style={{ fontSize: fontSize.sm, color: color.textMuted }}>
+                {answered ? `${answered} / ${totalQ} answered · ` : ''}Finish the video, then check your answers{v.isFull ? ' to continue' : ''}.
+              </div>
             )
           ) : (
             <Alert tone="warning" style={{ padding: '9px 13px', borderRadius: radius.md }}>
-              ⚠ The answer key for this test hasn't been added yet, so it can't be auto-scored. Pick a test with a key, or add one in src/data/videoMocks.js.
+              ⚠ The answer key for this test hasn't been added yet, so it can't be auto-scored. Pick a test with a key, or add one in src/data/.
             </Alert>
           )}
-          {!checked && <Button onClick={v.checkVideoMock} disabled={!key}>Check answers</Button>}
-          {checked && <Button variant="outline" size="sm" onClick={() => v.selectVideoMock(v.mock.index)} style={{ padding: '10px 14px' }}>↺ Retake this test</Button>}
+          {!checked && <Button onClick={check} disabled={!key || (!answered && !v.isFull)}>Check answers</Button>}
+          {checked && v.isFull && <Button onClick={v.continueExam}>{v.continueBtnLabel}</Button>}
+          {checked && !v.isFull && <Button variant="outline" size="sm" onClick={() => v.selectVideoMock(v.mock.index)} style={{ padding: '10px 14px' }}>↺ Retake this test</Button>}
         </div>
       </Card>
     </>

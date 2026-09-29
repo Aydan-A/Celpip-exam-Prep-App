@@ -1,53 +1,67 @@
-import { BackLink, Badge, Button, Card, Eyebrow, Grid, Heading, PageHeader, color, font, fontSize } from '../../design-system/index.js';
+import { BackLink, BulletList, Button, Card, Eyebrow, PageHeader, color, font, fontSize, fontWeight } from '../../design-system/index.js';
 import SectionGuide from '../practice/SectionGuide.jsx';
 
-// Full-exam overview shown BEFORE the exam starts (Issue #2): every section's
-// scoring criteria, CLB 9+ tips, and the ordered list of tasks with timing, so
-// the candidate sees all guidance up front.
-export default function ExamIntro({ v }) {
-  const totalTasks = v.sections.reduce((n, s) => n + s.tasks.length, 0);
+const RULES = [
+  'Listening and Reading are each one full video mock test, the same ones as in Test Yourself. Mark the answer sheet, then check your answers to continue.',
+  'Writing timers start on their own and cannot be paused.',
+  'Each task must be answered before you can continue — there is no going back.',
+  'Speaking records through your microphone, so allow access when asked.',
+];
 
+// Full-exam overview shown BEFORE the exam starts (Issue #2): the sections in
+// order with their length, and each section's scoring criteria and CLB 9+ tips
+// one click away, so all guidance is available up front.
+export default function ExamIntro({ v }) {
   return (
     <>
       <BackLink onClick={v.goDashboard}>Dashboard</BackLink>
       <PageHeader
-        centered
         eyebrow="Full Exam Mode"
         title="Before you begin"
-        subtitle={`You'll complete all ${totalTasks} tasks in the official order — Listening, Reading, Writing, then Speaking. Each task is timed. Review the criteria and tips for every section below, then start when you're ready.`}
-        style={{ margin: '10px 0 6px' }}
+        subtitle="All four sections in the official order, timed like the real test. You get a CLB estimate for each section at the end."
+        style={{ marginTop: 8, marginBottom: 22 }}
       />
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14, margin: '24px 0' }}>
-        {v.sections.map((sec) => (
-          <Card key={sec.id}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <Heading level="card" style={{ fontSize: 17 }}>{sec.name}</Heading>
-              <Badge tone={v.sectionStyle[sec.id]} mono>{sec.tasks.length} TASKS</Badge>
-            </div>
-
-            <SectionGuide section={sec} />
-
-            <Eyebrow style={{ margin: '14px 0 7px' }}>Tasks</Eyebrow>
-            <Grid min={260} gap={6}>
-              {sec.tasks.map((t, i) => {
-                const timing = t.kind === 'speaking' ? `${t.prepSec}s + ${t.responseSec}s` : t.minutes ? `${t.minutes} min` : '';
-                return (
-                  <div key={t.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: fontSize.sm, color: color.textSecondary, padding: '4px 0' }}>
-                    <span>{i + 1}. {t.name}</span>
-                    <span style={{ fontFamily: font.mono, color: color.textMuted, whiteSpace: 'nowrap' }}>{timing}</span>
-                  </div>
-                );
-              })}
-            </Grid>
-          </Card>
+      <Eyebrow style={{ marginBottom: 8 }}>Exam order</Eyebrow>
+      <Card padding="none" style={{ overflow: 'hidden', marginBottom: 18 }}>
+        {v.sections.map((sec, i) => (
+          <SectionRow key={sec.id} n={i + 1} sec={sec} accent={v.sectionStyle[sec.id]} last={i === v.sections.length - 1} />
         ))}
-      </div>
+      </Card>
 
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 12 }}>
+      <Card padding="sm" style={{ marginBottom: 24 }}>
+        <Eyebrow style={{ marginBottom: 8 }}>How it works</Eyebrow>
+        <BulletList items={RULES} />
+      </Card>
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
         <Button variant="secondary" size="lg" onClick={v.goDashboard}>Cancel</Button>
         <Button size="lg" onClick={v.beginFullExam}>Begin full exam →</Button>
       </div>
     </>
+  );
+}
+
+// One section: number, name and length; expands to show its criteria and tips.
+function SectionRow({ n, sec, accent, last }) {
+  const { duration, parts } = sec.official;
+  return (
+    <details className="ds-disclosure" style={{ borderBottom: last ? 'none' : `1px solid ${color.divider}` }}>
+      <summary className="ds-row-interactive ds-focusable" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', cursor: 'pointer' }}>
+        <div style={{ flex: 'none', width: 26, height: 26, borderRadius: 999, background: accent.bg, color: accent.color, fontFamily: font.mono, fontWeight: fontWeight.bold, fontSize: fontSize.sm, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {n}
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: fontSize.lg, fontWeight: fontWeight.bold }}>{sec.name}</div>
+          <div style={{ fontSize: fontSize.sm, fontFamily: font.mono, color: color.textMuted }}>{parts} parts · {duration}</div>
+        </div>
+        <div style={{ flex: 'none', fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: accent.color, whiteSpace: 'nowrap' }}>
+          Criteria & tips <span className="ds-disclosure-chevron">▾</span>
+        </div>
+      </summary>
+      <div style={{ padding: '4px 20px 18px 60px' }}>
+        <SectionGuide section={sec} />
+      </div>
+    </details>
   );
 }

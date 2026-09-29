@@ -3,10 +3,12 @@ import { Badge, Button, Card, Grid, Heading, PageHeader, Text, fontSize, tone } 
 export default function ReportScreen({ v }) {
   return (
     <>
-      <PageHeader centered eyebrow="Full exam complete" title="Your score report" style={{ marginBottom: 8 }} />
-      <div style={{ textAlign: 'center', marginBottom: 28 }}>
-        <Badge tone={tone.inverse} mono style={{ fontSize: 15, padding: '8px 16px', borderRadius: 8 }}>Overall estimate: CLB {v.overallClb}</Badge>
-      </div>
+      <PageHeader centered eyebrow={v.examScope ? `${v.examScope.name} section complete` : 'Full exam complete'} title="Your score report" style={{ marginBottom: v.examScope ? 24 : 8 }} />
+      {!v.examScope && (
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <Badge tone={tone.inverse} mono style={{ fontSize: 15, padding: '8px 16px', borderRadius: 8 }}>Overall estimate: CLB {v.overallClb}</Badge>
+        </div>
+      )}
       <Grid min={300} gap={16} style={{ marginBottom: 24 }}>
         {v.reportRows.map((row, i) => (
           <Card key={i} style={{ padding: '18px 20px' }}>
@@ -19,7 +21,9 @@ export default function ReportScreen({ v }) {
         ))}
       </Grid>
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <Button size="lg" onClick={v.goDashboard}>Back to dashboard</Button>
+        {v.examScope
+          ? <Button size="lg" onClick={() => v.openSection(v.examScope.id)}>Back to {v.examScope.name}</Button>
+          : <Button size="lg" onClick={v.goDashboard}>Back to dashboard</Button>}
       </div>
     </>
   );
