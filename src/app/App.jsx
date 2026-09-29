@@ -58,6 +58,7 @@ function freshTaskState(sectionId, taskIndex, mode) {
     spokeSec: 0,
     improved: '', // the user's own improved version of the answer
     score: null, // CELPIP level (1–12) the user gives this answer
+    model: '', // a CELPIP 11–12 answer to the same question, added by the user
   };
 }
 
@@ -461,8 +462,8 @@ export default function App() {
     setState((st) => ({ answers, task: { ...st.task, savedId: id } }));
   }
   // Edit a saved answer from My answers / the section page. `field` is 'text'
-  // (the original answer), 'improved' (the user's own rewrite) or 'score'
-  // (the CELPIP level the user gives it).
+  // (the original answer), 'improved' (the user's own rewrite), 'model' (a
+  // CELPIP 11–12 answer the user adds) or 'score' (the level they give it).
   function updateSavedAnswer(id, field, value) {
     const patch = field === 'text'
       ? { text: value, words: (value.trim().match(/\S+/g) || []).length, edited: new Date().toISOString() }
@@ -585,6 +586,10 @@ export default function App() {
     const val = e.target.value;
     setState((s) => ({ task: { ...s.task, improved: val } }));
   }
+  function onModelChange(e) {
+    const val = e.target.value;
+    setState((s) => ({ task: { ...s.task, model: val } }));
+  }
   function onScoreChange(e) {
     const val = Number(e.target.value) || null;
     setState((s) => ({ task: { ...s.task, score: val } }));
@@ -594,7 +599,7 @@ export default function App() {
   function saveSpeakingAnswer() {
     const s = stateRef.current;
     const t = s.task;
-    if (!t || t.kind !== 'speaking' || !(t.transcript.trim() || t.audioBlob || t.improved.trim())) return;
+    if (!t || t.kind !== 'speaking' || !(t.transcript.trim() || t.audioBlob || t.improved.trim() || t.model.trim())) return;
     const task = getTask(s.activeSection, s.activeTaskIndex);
     const item = task.bank[s.itemIndex];
     const id = t.savedId || `ans-${Date.now()}`;
@@ -608,6 +613,7 @@ export default function App() {
       audio: !!t.audioBlob,
       improved: t.improved.trim() ? t.improved : undefined,
       score: t.score || undefined,
+      model: t.model.trim() ? t.model : undefined,
       date: new Date().toISOString(),
     };
     const answers = [entry, ...s.answers.filter((a) => a.id !== id)];
@@ -839,6 +845,7 @@ export default function App() {
       onTranscriptChange,
       onImprovedChange,
       onScoreChange,
+      onModelChange,
       saveSpeakingAnswer,
       retryTask,
       deleteSpeakingAttempt,

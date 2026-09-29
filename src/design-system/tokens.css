@@ -56,6 +56,7 @@
   /* ---- Type ---- */
   --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: ui-monospace, 'SF Mono', 'Roboto Mono', monospace;
+  --font-hand: 'Bradley Hand', 'Segoe Print', 'Comic Sans MS', cursive; /* red-pen notes; system fonts only */
 
   /* ---- Elevation ---- */
   --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.06);

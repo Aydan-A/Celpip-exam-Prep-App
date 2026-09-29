@@ -45,6 +45,7 @@ export const color = {
 export const font = {
   sans: 'var(--font-sans)',
   mono: 'var(--font-mono)',
+  hand: 'var(--font-hand)',
 };
 
 // Type scale (px). Pick the nearest step instead of inventing new sizes.

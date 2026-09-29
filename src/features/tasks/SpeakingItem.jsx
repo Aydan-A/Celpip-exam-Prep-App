@@ -3,6 +3,7 @@ import { canTranscribe } from '../../lib/recorder.js';
 import VocabSticky from '../vocab/VocabSticky.jsx';
 import ItemFilter from './ItemFilter.jsx';
 import ScoreSelect from '../answers/ScoreSelect.jsx';
+import RedPenView from '../answers/RedPenView.jsx';
 
 // Speaking item. Flow: idle → prep → response → review.
 // Issue #6: a notepad is shown for the prep note, and the prep timer starts the
@@ -124,8 +125,9 @@ function MicStatus({ t }) {
 function Review({ v }) {
   const { taskState: t, handlers } = v;
   const saved = t.savedId && v.savedAnswers.find((a) => a.id === t.savedId);
-  const upToDate = saved && saved.text === t.transcript && (saved.improved || '') === (t.improved.trim() ? t.improved : '') && (saved.score || null) === t.score;
-  const hasSomething = !!(t.transcript.trim() || t.audioBlob || t.improved.trim());
+  const same = (stored, live) => (stored || '') === (live.trim() ? live : '');
+  const upToDate = saved && saved.text === t.transcript && same(saved.improved, t.improved) && same(saved.model, t.model) && (saved.score || null) === t.score;
+  const hasSomething = !!(t.transcript.trim() || t.audioBlob || t.improved.trim() || t.model.trim());
   const words = (t.transcript.trim().match(/\S+/g) || []).length;
   return (
     <div style={{ marginBottom: 14 }}>
@@ -155,15 +157,29 @@ function Review({ v }) {
         onChange={handlers.onImprovedChange}
         minHeight={140}
       />
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, margin: '8px 0 16px' }}>
         <div style={{ fontSize: 12, color: color.textMuted }}>{countWords(t.improved)} words</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <CopyButton text={t.improved} />
-          <ScoreSelect value={t.score} onChange={handlers.onScoreChange} />
-          <Button size="sm" onClick={handlers.saveSpeakingAnswer} disabled={!hasSomething || upToDate || t.recording}>
-            {upToDate ? '✓ Saved' : saved ? 'Update saved answer' : 'Save answer'}
-          </Button>
-        </div>
+        <CopyButton text={t.improved} />
+      </div>
+      {t.transcript.trim() && t.improved.trim() && <RedPenView original={t.transcript} improved={t.improved} style={{ marginBottom: 16 }} />}
+
+      <Eyebrow style={{ marginBottom: 6 }}>CELPIP 11–12 answer</Eyebrow>
+      <TextArea
+        placeholder="Paste or write a level 11–12 answer to this question to learn from…"
+        value={t.model}
+        onChange={handlers.onModelChange}
+        minHeight={140}
+      />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, margin: '8px 0 16px' }}>
+        <div style={{ fontSize: 12, color: color.textMuted }}>{countWords(t.model)} words</div>
+        <CopyButton text={t.model} />
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8, flexWrap: 'wrap', borderTop: `1px solid ${color.divider}`, paddingTop: 12 }}>
+        <ScoreSelect value={t.score} onChange={handlers.onScoreChange} />
+        <Button size="sm" onClick={handlers.saveSpeakingAnswer} disabled={!hasSomething || upToDate || t.recording}>
+          {upToDate ? '✓ Saved' : saved ? 'Update saved answer' : 'Save answer'}
+        </Button>
       </div>
     </div>
   );

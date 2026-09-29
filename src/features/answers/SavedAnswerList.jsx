@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Badge, Button, Card, Eyebrow, List, TextArea, color, font, fontSize, fontWeight } from '../../design-system/index.js';
+import { Badge, Button, Card, CopyButton, Eyebrow, List, TextArea, color, font, fontSize, fontWeight } from '../../design-system/index.js';
 import { getAudio } from '../../lib/audioStore.js';
 import WritingPrompt, { optionName } from '../tasks/WritingPrompt.jsx';
 import ScoreSelect from './ScoreSelect.jsx';
+import RedPenView from './RedPenView.jsx';
 import { clbBandInfo } from '../../lib/clb.js';
 
 const countWords = (text) => (text.trim().match(/\S+/g) || []).length;
 
 // Saved writing / speaking answers, newest first. Click a row to open it:
 // read the task, play the recording, edit the answer, compare it with the
-// suggested (model) answer, write an improved version, or delete it.
+// suggested (model) answer, write an improved version (marked in red pen
+// against the answer), add a CELPIP 11–12 answer, copy any of them, or delete.
 export default function SavedAnswerList({ sections, answers, onUpdate, onDelete, showSection = false }) {
   const rows = answers
     .map((a) => {
@@ -52,7 +54,7 @@ function AnswerRow({ a, sec, task, item, last, showSection, onUpdate, onDelete }
           {task.name}
         </span>
         <span style={{ fontSize: fontSize.sm, fontFamily: font.mono, color: color.textMuted }}>
-          {new Date(a.date).toLocaleDateString()} · {a.words} words{a.audio ? ' · 🎙' : ''}{a.edited ? ' · edited' : ''}{a.improved ? ' · ✎ rewrite' : ''}
+          {new Date(a.date).toLocaleDateString()} · {a.words} words{a.audio ? ' · 🎙' : ''}{a.edited ? ' · edited' : ''}{a.improved ? ' · ✎ rewrite' : ''}{a.model ? ' · ★ 11–12' : ''}
         </span>
         {a.score && <Badge tone={clbBandInfo(a.score)} mono>Level {a.score}</Badge>}
       </summary>
@@ -90,6 +92,18 @@ function AnswerRow({ a, sec, task, item, last, showSection, onUpdate, onDelete }
         onSave={(val) => onUpdate(a.id, 'improved', val)}
       />
 
+      {a.text && a.improved && <RedPenView original={a.text} improved={a.improved} style={{ marginTop: 16 }} />}
+
+      <EditableText
+        label="CELPIP 11–12 answer"
+        hint="Paste or write a level 11–12 answer to this question to learn from."
+        value={a.model || ''}
+        task={task}
+        empty="Not added yet."
+        editLabel={a.model ? '✏️ Edit 11–12 answer' : '➕ Add an 11–12 answer'}
+        onSave={(val) => onUpdate(a.id, 'model', val)}
+      />
+
       <div style={{ borderTop: `1px solid ${color.divider}`, marginTop: 14, paddingTop: 12 }}>
         <Button variant="danger" size="sm" onClick={remove}>Delete answer</Button>
       </div>
@@ -124,7 +138,10 @@ function EditableText({ label, hint, value, task, empty, editLabel, startFrom, o
           {value
             ? <TextBox>{value}</TextBox>
             : hint ? null : <div style={{ fontSize: fontSize.sm, color: color.textMuted, marginBottom: 8 }}>{empty}</div>}
-          <Button variant="outline" size="sm" onClick={() => setDraft(value || startFrom || '')}>{editLabel}</Button>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <Button variant="outline" size="sm" onClick={() => setDraft(value || startFrom || '')}>{editLabel}</Button>
+            {value && <CopyButton text={value} />}
+          </div>
         </>
       )}
     </div>
